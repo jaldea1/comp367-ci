@@ -1,0 +1,32 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build') {
+            steps {
+                bat 'mvn -B clean package'
+            }
+        }
+
+        stage('Run') {
+            steps {
+                bat 'mvn -q exec:java -Dexec.mainClass="com.comp367.App"'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Build and Run successful!'
+        }
+        failure {
+            echo 'Build failed!'
+        }
+    }
+}
