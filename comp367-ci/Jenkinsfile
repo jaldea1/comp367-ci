@@ -7,20 +7,34 @@ pipeline {
 
     stages {
         stage('Checkout') {
-            steps { checkout scm }
+            steps {
+                checkout scm
+            }
         }
 
         stage('Build') {
-            steps { bat 'mvn -B clean package' }
+            steps {
+                dir('comp367-ci') {
+                    bat 'mvn -B clean package'
+                }
+            }
         }
 
         stage('Run') {
-            steps { bat 'mvn -q exec:java -Dexec.mainClass="com.comp367.App"' }
+            steps {
+                dir('comp367-ci') {
+                    bat 'mvn -q exec:java -Dexec.mainClass="com.comp367.App"'
+                }
+            }
         }
     }
 
     post {
-        success { echo 'Build and Run successful!' }
-        failure { echo 'Build failed!' }
+        success {
+            echo 'Build and Run successful!'
+        }
+        failure {
+            echo 'Build failed!'
+        }
     }
 }
