@@ -4,4 +4,13 @@
   <artifactId>comp367-ci</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>comp367-ci</name>
+  <build>
+    <plugins>
+        <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>3.3.0</version>
+        </plugin>
+    </plugins>
+</build>
 </project>
