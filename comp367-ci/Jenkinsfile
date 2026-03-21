@@ -19,7 +19,9 @@ pipeline {
 
         stage('Build Maven Project') {
             steps {
-                bat 'mvn -B clean package'
+                dir('comp367-ci') {
+                    bat 'mvn -B clean package'
+                }
             }
         }
 
@@ -37,7 +39,9 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                bat 'docker build -t %IMAGE_NAME%:%IMAGE_TAG% .'
+                dir('comp367-ci') {
+                    bat 'docker build -t %IMAGE_NAME%:%IMAGE_TAG% .'
+                }
             }
         }
 
