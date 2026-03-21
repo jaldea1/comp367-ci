@@ -5,6 +5,11 @@ pipeline {
         maven 'Maven3'
     }
 
+    environment {
+        IMAGE_NAME = 'jaldea1/maven-webapp'
+        IMAGE_TAG = 'v1'
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -12,29 +17,43 @@ pipeline {
             }
         }
 
-        stage('Build') {
+        stage('Build Maven Project') {
             steps {
-                dir('comp367-ci') {
-                    bat 'mvn -B clean package'
+                bat 'mvn -B clean package'
+            }
+        }
+
+        stage('Docker Login') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-credentials',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    bat 'docker login -u %DOCKER_USER% -p %DOCKER_PASS%'
                 }
             }
         }
 
-        stage('Run') {
+        stage('Docker Build') {
             steps {
-                dir('comp367-ci') {
-                    bat 'mvn -q exec:java -Dexec.mainClass="com.comp367.App"'
-                }
+                bat 'docker build -t %IMAGE_NAME%:%IMAGE_TAG% .'
+            }
+        }
+
+        stage('Docker Push') {
+            steps {
+                bat 'docker push %IMAGE_NAME%:%IMAGE_TAG%'
             }
         }
     }
 
     post {
         success {
-            echo 'Build and Run successful!'
+            echo 'Maven build, Docker build, and Docker push completed successfully.'
         }
         failure {
-            echo 'Build failed!'
+            echo 'Pipeline failed.'
         }
     }
 }
